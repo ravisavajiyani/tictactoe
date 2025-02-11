@@ -1,4 +1,3 @@
-// src/components/Board.jsx
 import React from 'react'
 import styled from 'styled-components'
 
@@ -30,10 +29,9 @@ function Board({ onGameEnd }) {
     const piece = xIsNext ? 'X' : 'O'
     newSquares[index] = piece
     
+    // announce the move for screen reader users
     const row = Math.floor(index / 3) + 1
     const col = (index % 3) + 1
-    
-    // Create and trigger move announcement
     const announcement = document.createElement('div')
     announcement.setAttribute('role', 'alert')
     announcement.style.position = 'absolute'
@@ -47,6 +45,21 @@ function Board({ onGameEnd }) {
     setSquares(newSquares)
     setXIsNext(!xIsNext)
   }
+
+  const handleNewGame = () => {
+    setSquares(Array(9).fill(null))
+    setXIsNext(true)
+    setGameEnded(false)
+    
+    // announce the new game for screen reader users
+    const announcement = document.createElement('div')
+    announcement.setAttribute('role', 'alert')
+    announcement.textContent = 'New game started'
+    document.body.appendChild(announcement)
+    setTimeout(() => document.body.removeChild(announcement), 1000)
+  }
+
+  const isGameOver = winner || squares.every(Boolean)
 
   return (
     <BoardContainer role="region" aria-label="Tic Tac Toe Board">
@@ -71,6 +84,14 @@ function Board({ onGameEnd }) {
           )
         })}
       </Grid>
+      {isGameOver && (
+        <NewGameButton
+          onClick={handleNewGame}
+          aria-label="Start new game"
+        >
+          New Game
+        </NewGameButton>
+      )}
     </BoardContainer>
   )
 }
@@ -154,6 +175,27 @@ const Cell = styled.button`
 
   @media (pointer: coarse) {
     min-height: 44px;
+  }
+`
+const NewGameButton = styled.button`
+  background: #2C5282;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 1rem;
+
+  &:hover {
+    background: #2B6CB0;
+  }
+
+  &:focus {
+    outline: 3px solid #0066cc;
+    outline-offset: 2px;
   }
 `
 // #endregion
