@@ -2,23 +2,48 @@
 import React from 'react'
 import styled from 'styled-components'
 
-function Board() {
+function Board({ onGameEnd }) {
   const [squares, setSquares] = React.useState(Array(9).fill(null))
   const [xIsNext, setXIsNext] = React.useState(true)
+  const [gameEnded, setGameEnded] = React.useState(false)
   
   const nextPlayer = xIsNext ? 'X' : 'O'
   const winner = calculateWinner(squares)
   const status = winner 
-    ? `Winner: ${winner}` 
+    ? `Winner: ${winner}`
     : squares.every(Boolean)
     ? "Game is a draw!"
     : `Next player: ${nextPlayer}`
 
+  React.useEffect(() => {
+    const isGameOver = winner || squares.every(Boolean)
+    if (isGameOver && !gameEnded) {
+      onGameEnd(squares, winner)
+      setGameEnded(true)
+    }
+  }, [winner, squares, gameEnded, onGameEnd])
+
   const handleClick = (index) => {
     if (squares[index] || winner) return
-
+    
     const newSquares = squares.slice()
-    newSquares[index] = nextPlayer
+    const piece = xIsNext ? 'X' : 'O'
+    newSquares[index] = piece
+    
+    const row = Math.floor(index / 3) + 1
+    const col = (index % 3) + 1
+    
+    // Create and trigger move announcement
+    const announcement = document.createElement('div')
+    announcement.setAttribute('role', 'alert')
+    announcement.style.position = 'absolute'
+    announcement.style.width = '1px'
+    announcement.style.height = '1px'
+    announcement.style.overflow = 'hidden'
+    announcement.textContent = `Placed ${piece} at row ${row}, column ${col}`
+    document.body.appendChild(announcement)
+    setTimeout(() => document.body.removeChild(announcement), 1000)
+    
     setSquares(newSquares)
     setXIsNext(!xIsNext)
   }
@@ -108,8 +133,8 @@ const Cell = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: ${props => 
-    props.value === 'X' ? '#2C5282' : 
+  color: ${props =>
+    props.value === 'X' ? '#2C5282' :
     props.value === 'O' ? '#9C4221' :
     '#333'};
 
