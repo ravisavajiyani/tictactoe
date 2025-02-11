@@ -31,6 +31,7 @@ const Container = styled.div`
   align-items: center;
   padding: clamp(1rem, 5vw, 2rem);
   background-color: #f5f5f5;
+  width: 100%;
 `
 
 const Title = styled.h1`
@@ -44,6 +45,9 @@ const Main = styled.main`
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
 `
 // #endregion
